@@ -1,7 +1,7 @@
 <p align="center"><img width="150" height="150" src="https://raw.githubusercontent.com/cwouter/SockTrader/master/docs/SockTraderLogo.png" alt="SockTrader logo" /></p>
 
 <h1 align="center">SockTrader dashboard</h1>
-<p align="center"><b>Realtime dashboard built for <a href="http://localhost:3000">SockTrader</a></b></p>
+<p align="center"><b>Realtime dashboard built for <a href="https://github.com/cwouter/SockTrader">SockTrader</a></b></p>
 
 <p align="center"><b>🚧 Project is currently under development! 🚧</b></p>
 
