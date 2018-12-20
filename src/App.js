@@ -2,7 +2,7 @@
 import websocket from 'websocket/lib/WebSocketClient';
 import React, {Component} from 'react';
 import logo from './logo.svg';
-import './App.css';
+import './App.module.scss';
 
 // debugger;
 console.log(websocket);
