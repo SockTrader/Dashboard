@@ -58,7 +58,7 @@ class CandlestickChart extends Component {
       <Chart id={1} yExtents={[d => [d.high, d.low]]}>
         <XAxis axisAt="bottom" orient="bottom" {...gridProps} {...xGrid} />
         <YAxis axisAt="right" orient="right" ticks={10} {...gridProps} {...yGrid} />
-        <OHLCTooltip origin={[-40, 0]} fontSize={14} labelFill={"#555"} textFill={"#0074b4"}/>
+        <OHLCTooltip origin={[-40, 0]} fontSize={14} labelFill={'#555'} textFill={'#0074b4'}/>
         <MouseCoordinateY at="right" orient="right" displayFormat={format('.2f')}/>
         <MouseCoordinateX at="bottom" orient="bottom" displayFormat={timeFormat('%Y-%m-%d')}/>
         <EdgeIndicator itemType="last" orient="right" edgeAt="right"
@@ -75,7 +75,9 @@ class CandlestickChart extends Component {
           wickStroke={d => d.close > d.open ? '#58ac43' : '#a60000'}
         />
       </Chart>
-      <Volume id={2} />
+      <Chart id={2} yExtents={[d => d.volume]} height={200} origin={(w, h) => [0, h - 200]}>
+        <Volume />
+      </Chart>
       <CrossHairCursor/>
     </ChartCanvas>;
   }
