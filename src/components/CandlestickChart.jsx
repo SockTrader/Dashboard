@@ -1,20 +1,25 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {discontinuousTimeScaleProvider} from 'react-stockcharts/lib/scale';
-import {BarSeries, CandlestickSeries} from 'react-stockcharts/lib/series';
+import {CandlestickSeries} from 'react-stockcharts/lib/series';
 import {XAxis, YAxis} from 'react-stockcharts/lib/axes';
-import { timeFormat } from "d3-time-format";
-import {ChartCanvas, Chart} from 'react-stockcharts';
+import OHLCTooltip from 'react-stockcharts/lib/tooltip/OHLCTooltip';
 import {last} from 'react-stockcharts/lib/utils';
+import {fitWidth} from 'react-stockcharts/lib/helper';
+import {change} from 'react-stockcharts/lib/indicator';
+import {EdgeIndicator, MouseCoordinateX, MouseCoordinateY, CrossHairCursor} from 'react-stockcharts/lib/coordinates';
+import {timeFormat} from 'd3-time-format';
+import {ChartCanvas, Chart} from 'react-stockcharts';
 import {format} from 'd3-format';
-import EdgeIndicator from 'react-stockcharts/lib/coordinates/EdgeIndicator';
-import MouseCoordinateY from 'react-stockcharts/lib/coordinates/MouseCoordinateY';
-import CrossHairCursor from 'react-stockcharts/lib/coordinates/CrossHairCursor';
-import MouseCoordinateX from 'react-stockcharts/lib/coordinates/MouseCoordinateX';
+import {BuyArrows, SellArrows} from './Arrows';
+import Volume from './Volume';
 
 class CandlestickChart extends Component {
   render() {
     const {type, data: initialData, width, ratio} = this.props;
+
+    const changeCalculator = change();
+    const calculatedData = changeCalculator(initialData);
 
     const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(d => d.date);
     const {
@@ -22,52 +27,56 @@ class CandlestickChart extends Component {
       xScale,
       xAccessor,
       displayXAccessor,
-    } = xScaleProvider(initialData);
+    } = xScaleProvider(calculatedData);
 
     const start = xAccessor(last(data));
     const end = xAccessor(data[Math.max(0, data.length - 100)]);
     const xExtents = [start, end];
 
-    return <ChartCanvas height={400}
+    const margin = {left: 60, right: 80, top: 20, bottom: 20};
+
+    const height = 800;
+    const gridHeight = height - margin.top - margin.bottom;
+    const gridWidth = width - margin.left - margin.right;
+
+    const gridProps = {tickStrokeOpacity: 0.25, tickStroke: '#333', stroke: '#333'};
+    const yGrid = {innerTickSize: -1 * gridWidth};
+    const xGrid = {innerTickSize: -1 * gridHeight};
+
+    return <ChartCanvas height={height}
                         ratio={ratio}
                         width={width}
-                        margin={{left: 50, right: 50, top: 10, bottom: 30}}
+                        margin={margin}
                         type={type}
                         seriesName="MSFT"
                         data={data}
                         xScale={xScale}
                         xAccessor={xAccessor}
-
                         displayXAccessor={displayXAccessor}
                         xExtents={xExtents}
     >
-      <Chart id={1} yExtents={d => [d.high, d.low]}>
-        <XAxis axisAt="bottom" orient="bottom"/>
-        <YAxis axisAt="right" orient="right" ticks={5}/>
-        <MouseCoordinateY
-          at="right"
-          orient="right"
-          displayFormat={format(".2f")} />
-        <MouseCoordinateX
-          at="bottom"
-          orient="bottom"
-          displayFormat={timeFormat("%Y-%m-%d")} />
+      <Chart id={1} yExtents={[d => [d.high, d.low]]}>
+        <XAxis axisAt="bottom" orient="bottom" {...gridProps} {...xGrid} />
+        <YAxis axisAt="right" orient="right" ticks={10} {...gridProps} {...yGrid} />
+        <OHLCTooltip origin={[-40, 0]} fontSize={14} labelFill={"#555"} textFill={"#0074b4"}/>
+        <MouseCoordinateY at="right" orient="right" displayFormat={format('.2f')}/>
+        <MouseCoordinateX at="bottom" orient="bottom" displayFormat={timeFormat('%Y-%m-%d')}/>
         <EdgeIndicator itemType="last" orient="right" edgeAt="right"
                        yAccessor={d => d.close}
-                       fill={d => d.close > d.open ? "#6BA583" : "#FF0000"}
+                       fill={d => d.close > d.open ? '#58ac43' : '#a60000'}
         />
-        <CandlestickSeries/>
-      </Chart>
-      <Chart id={2} yExtents={d => d.volume}>
-        <YAxis axisAt="left" orient="left" ticks={5} tickFormat={format('.2s')}/>
-        <MouseCoordinateY
-          at="left"
-          orient="left"
-          displayFormat={format(".2f")} />
 
-        <BarSeries yAccessor={d => d.volume}/>
+        <BuyArrows/>
+        <SellArrows/>
+
+        <CandlestickSeries
+          fill={d => d.close > d.open ? '#38761d' : '#6f0000'}
+          stroke={d => d.close > d.open ? '#58ac43' : '#a60000'}
+          wickStroke={d => d.close > d.open ? '#58ac43' : '#a60000'}
+        />
       </Chart>
-      <CrossHairCursor />
+      <Volume id={2} />
+      <CrossHairCursor/>
     </ChartCanvas>;
   }
 }
@@ -83,4 +92,4 @@ CandlestickChart.defaultProps = {
   type: 'svg',
 };
 
-export default CandlestickChart;
+export default fitWidth(CandlestickChart);
