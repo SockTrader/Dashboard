@@ -1,16 +1,18 @@
-import {configureStore, getDefaultMiddleware} from 'redux-starter-kit';
+import {configureStore} from 'redux-starter-kit';
 import candles from './reducers/candles';
+import thunk from 'redux-thunk';
+import {emit, bindSocketToStore} from './services/websocket';
 
-export default configureStore({
+const store = configureStore({
 
   // A single reducer function that will be used as the root reducer,
   // or an object of slice reducers that will be passed to combineReducers()
   reducer: {
-    candles
+    candles,
   },
 
   // An array of Redux middlewares.  If not supplied, defaults to just redux-thunk.
-  middleware: [...getDefaultMiddleware()],
+  middleware: [thunk.withExtraArgument({emit})],
 
   // Built-in support for devtools. Defaults to true.
   devTools: true,
@@ -21,3 +23,7 @@ export default configureStore({
   // Same as current createStore.
   // enhancer : ReduxStoreEnhancer,
 });
+
+bindSocketToStore(store);
+
+export default store;

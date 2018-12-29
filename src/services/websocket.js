@@ -1,30 +1,64 @@
-const client = new WebSocket('ws://localhost:8080', 'echo-protocol');
+import {messageTypes} from '../constants/websocket';
 
-console.log(client);
+let client;
 
-client.onopen = function() {
-  // Web Socket is connected, send data using send()
-  var blob = new Blob([JSON.stringify("dlkj", null, 2)], {type : 'application/json'});
+class WebSocketClient extends WebSocket {
 
-  client.send(blob);
-  console.log('Message is sent...');
-};
+  sendStack = [];
+  
+  constructor(address, protocols, options) {
+    super(address, protocols, options);
+    this.addEventListener('open', () => this.processStack());
+  }
 
-client.onmessage = function(evt) {
-  const received_msg = evt.data;
-  console.log('Message is received: ' + received_msg);
-};
+  processStack() {
+    this.sendStack.forEach(args => this.send.apply(this, args));
+    this.sendStack = [];
+  }
 
-client.onclose = function() {
-  console.log('Connection closed...');
-};
+  send(data, options, cb) {
+    if (this.readyState === WebSocket.OPEN) {
+      return super.send.apply(this, arguments);
+    }
 
-export const init = (store) => {
-  // Object.keys( messageTypes )
-  //       .forEach( type => socket.on( type, ( payload ) =>
-  //           store.dispatch({ type, payload })
-  //         )
-  //       );
+    this.sendStack.push(arguments);
+  }
+}
+
+function connect() {
+  client = new WebSocketClient('ws://localhost:8080', 'echo-protocol', null);
+
+  client.onopen = () => {
+    console.log('Connected with server!');
+
+    // Web Socket is connected, send data using send()
+    // var blob = new Blob([JSON.stringify("dlkj", null, 2)], {type : 'application/json'});
+    //
+    // client.send(blob);
+    // console.log('Message is sent...');
+  };
+
+  client.onmessage = evt => {
+    const received_msg = evt.data;
+    console.log('Message is received: ' + received_msg);
+  };
+
+  client.onclose = () => {
+    console.log('Connection closed. Retrying to connect in 3 seconds.');
+    setTimeout(() => {
+      console.log('Connecting..');
+      connect();
+    }, 3000);
+  };
+
+  return client;
+}
+
+client = connect();
+
+export const bindSocketToStore = (store) => {
+  Object.keys(messageTypes).forEach(type => client.addEventListener(type, (payload) => store.dispatch({type, payload})));
 };
 
 export const emit = (type, payload) => client.send(JSON.stringify({type, payload}));
+export default client;
