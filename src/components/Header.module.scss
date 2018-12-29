@@ -1,0 +1,20 @@
+.text {
+  font-size: 14px;
+  display: inline-block;
+  margin-right: 5px;
+  position: relative;
+  top: -7px;
+}
+
+.status {
+  margin-right: 10px;
+  text-align: right;
+}
+
+.disconnected {
+  color: #ff0053;
+}
+
+.connected {
+  color: #00fd46;
+}

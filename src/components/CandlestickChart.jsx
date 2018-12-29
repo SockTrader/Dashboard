@@ -91,6 +91,7 @@ CandlestickChart.propTypes = {
 };
 
 CandlestickChart.defaultProps = {
+  data: [],
   type: 'svg',
 };
 

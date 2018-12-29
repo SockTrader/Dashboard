@@ -1,5 +1,6 @@
 import {configureStore} from 'redux-starter-kit';
 import candles from './reducers/candles';
+import websocket from './reducers/websocket';
 import thunk from 'redux-thunk';
 import {emit, bindSocketToStore} from './services/websocket';
 
@@ -9,6 +10,7 @@ const store = configureStore({
   // or an object of slice reducers that will be passed to combineReducers()
   reducer: {
     candles,
+    websocket
   },
 
   // An array of Redux middlewares.  If not supplied, defaults to just redux-thunk.
@@ -24,6 +26,6 @@ const store = configureStore({
   // enhancer : ReduxStoreEnhancer,
 });
 
-bindSocketToStore(store);
+bindSocketToStore(store)();
 
 export default store;
