@@ -17,9 +17,11 @@ import Volume from './Volume';
 class CandlestickChart extends Component {
   render() {
     const {type, data: initialData, width, ratio} = this.props;
+    const initData = [...initialData];
+    if (initData.length < 5) return null;
 
     const changeCalculator = change();
-    const calculatedData = changeCalculator(initialData);
+    const calculatedData = changeCalculator(initData);
 
     const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(d => d.date);
     const {
@@ -66,8 +68,8 @@ class CandlestickChart extends Component {
                        fill={d => d.close > d.open ? '#58ac43' : '#a60000'}
         />
 
-        <BuyArrows/>
-        <SellArrows/>
+        <BuyArrows reports={this.props.buyArrows}/>
+        <SellArrows reports={this.props.sellArrows}/>
 
         <CandlestickSeries
           fill={d => d.close > d.open ? '#38761d' : '#6f0000'}
@@ -85,6 +87,8 @@ class CandlestickChart extends Component {
 
 CandlestickChart.propTypes = {
   data: PropTypes.array.isRequired,
+  sellArrows: PropTypes.array.isRequired,
+  buyArrows: PropTypes.array.isRequired,
   width: PropTypes.number.isRequired,
   ratio: PropTypes.number.isRequired,
   type: PropTypes.oneOf(['svg', 'hybrid']).isRequired,
@@ -92,6 +96,8 @@ CandlestickChart.propTypes = {
 
 CandlestickChart.defaultProps = {
   data: [],
+  sellArrows: [],
+  buyArrows: [],
   type: 'svg',
 };
 

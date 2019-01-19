@@ -15,12 +15,12 @@ const initialState = {
   list: []
 };
 
+
 export default (state = initialState, action) => {
   switch (action.type.toString()) {
-    case "CANDLE_UPDATE":
-      const candles = action.payload;
-      return { ...state, list: [...state.list, parseCandles(candles[0])]};
-      // return { ...state, list: candles.map(r => parseCandles(r)).reverse() };
+    case "CANDLES":
+      return { ...state, list: action.payload.candles.map(parseCandles).reverse(), ...state.list};
+
     default:
       return state;
   }

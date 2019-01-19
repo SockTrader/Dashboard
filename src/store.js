@@ -1,5 +1,6 @@
 import {configureStore} from 'redux-starter-kit';
 import candles from './reducers/candles';
+import reports from './reducers/reports';
 import websocket from './reducers/websocket';
 import thunk from 'redux-thunk';
 import {emit, bindSocketToStore} from './services/websocket';
@@ -10,6 +11,7 @@ const store = configureStore({
   // or an object of slice reducers that will be passed to combineReducers()
   reducer: {
     candles,
+    reports,
     websocket
   },
 

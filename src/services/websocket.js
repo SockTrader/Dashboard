@@ -1,5 +1,6 @@
 import {messageTypes} from '../constants/websocket';
 import {CONN_CLOSE, CONN_CONNECTING, CONN_OPEN} from '../actions/websocket';
+import throttle from 'lodash.throttle';
 
 let websocket;
 
@@ -37,6 +38,12 @@ class WebSocketClient extends WebSocket {
   }
 }
 
+function storeDispatchClientEvents(client, store) {
+  messageTypes.forEach(type => client.addEventListener(type, (event) => {
+    store.dispatch({type, payload: event.data});
+  }));
+}
+
 export const bindSocketToStore = (store) => {
   function connect() {
     const client = new WebSocketClient('ws://localhost:8080', 'echo-protocol', null);
@@ -55,13 +62,10 @@ export const bindSocketToStore = (store) => {
         client.dispatchEvent(new Event(CONN_CONNECTING));
         client.removeEventListeners();
         websocket = connect();
-      }, 3000);
+      }, 5000);
     };
 
-    messageTypes.forEach(type => client.addEventListener(type, (event) => {
-      store.dispatch({type, payload: event.data});
-    }));
-
+    storeDispatchClientEvents(client, store);
     return client;
   }
 

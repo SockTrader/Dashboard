@@ -2,8 +2,18 @@ import BarAnnotation from 'react-stockcharts/lib/annotation/BarAnnotation';
 import Annotate from 'react-stockcharts/lib/annotation/Annotate';
 import React from 'react';
 
-export const SellArrows = () => {
-  return <Annotate with={BarAnnotation} when={d => d.date.getDate() === 1} usingProps={{
+const dateMatcher = reports => ({date: d}) => {
+  const found = reports.find(({createdAt: r}) => {
+    return  r.getFullYear() === d.getFullYear()
+      && r.getMonth() === d.getMonth()
+      && r.getDate() === d.getDate()
+      && r.getHours() === d.getHours()
+  });
+  return !!(found);
+};
+
+export const SellArrows = (props) => {
+  return <Annotate with={BarAnnotation} when={dateMatcher(props.reports)} usingProps={{
     y: ( { yScale, datum } ) => yScale( datum.high ),
     fill: "#a60000",
     textIcon: "⬇",
@@ -20,8 +30,8 @@ export const SellArrows = () => {
   }} />
 };
 
-export const BuyArrows = () => {
-  return <Annotate with={BarAnnotation} when={d => d.date.getDate() === 1} usingProps={{
+export const BuyArrows = (props) => {
+  return <Annotate with={BarAnnotation} when={dateMatcher(props.reports)} usingProps={{
     y: ( { yScale, datum } ) => yScale( datum.low ),
     fill: "#58ac43",
     textIcon: "⬆",

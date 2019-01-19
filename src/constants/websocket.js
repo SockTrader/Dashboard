@@ -1,9 +1,10 @@
-import {CANDLE_UPDATE, CONN_CLOSE, CONN_CONNECTING, CONN_OPEN, START_TRADING} from '../actions/websocket';
+import {CONN_CLOSE, CONN_CONNECTING, CONN_OPEN, START_TRADING} from '../actions/websocket';
 
 export const messageTypes = [
   CONN_OPEN,
   CONN_CLOSE,
   CONN_CONNECTING,
-  CANDLE_UPDATE,
+  "CANDLES",
+  "REPORT",
   START_TRADING,
 ];
